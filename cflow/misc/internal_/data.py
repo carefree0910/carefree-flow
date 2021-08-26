@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-import torch.distributed as dist
 
 from abc import abstractmethod
 from abc import ABCMeta
@@ -201,7 +200,7 @@ class CVLoader(DataLoaderProtocol):
         if sample_weights is not None:
             raise ValueError(
                 "in `CVLoader`, we should introduce `sample_weights` to the original "
-                "Pytorch `DataLoader` (by specifying corresponding samplers)"
+                "OneFlow `DataLoader` (by specifying corresponding samplers)"
             )
         super().__init__(sample_weights=sample_weights)
         self.loader = loader
@@ -225,10 +224,12 @@ class CVLoader(DataLoaderProtocol):
 
     @property
     def batch_size(self) -> int:  # type: ignore
-        batch_size = self.loader.batch_size
-        if dist.is_initialized():
-            batch_size *= dist.get_world_size()
-        return batch_size
+        # TODO : consider world size
+        # batch_size = self.loader.batch_size
+        # if dist.is_initialized():
+        #     batch_size *= dist.get_world_size()
+        # return batch_size
+        return self.loader.batch_size
 
     def copy(self) -> "CVLoader":
         dataset = self.data.dataset

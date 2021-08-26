@@ -1,10 +1,10 @@
 import os
 import json
 import onnx
-import torch
 import shutil
 
 import numpy as np
+import oneflow as flow
 
 from abc import abstractmethod
 from abc import ABCMeta
@@ -195,7 +195,7 @@ class DLPipeline(PipelineProtocol, metaclass=ABCMeta):
     # properties
 
     @property
-    def device(self) -> torch.device:
+    def device(self) -> flow.device:
         return self.device_info.device
 
     @property
@@ -325,7 +325,7 @@ class DLPipeline(PipelineProtocol, metaclass=ABCMeta):
             msg = f"{WARNING_PREFIX}no model file found in {folder}"
             raise ValueError(msg)
         checkpoint_path = os.path.join(folder, checkpoints[0])
-        states = torch.load(checkpoint_path, map_location=m.device)
+        states = flow.load(checkpoint_path, map_location=m.device)
         return cls._load_states_callback(m, states)
 
     # core
@@ -521,7 +521,7 @@ class DLPipeline(PipelineProtocol, metaclass=ABCMeta):
         abs_folder = os.path.abspath(export_folder)
         base_folder = os.path.dirname(abs_folder)
 
-        class ONNXWrapper(torch.nn.Module):
+        class ONNXWrapper(flow.nn.Module):
             def __init__(self) -> None:
                 super().__init__()
                 self.model = model
@@ -542,12 +542,13 @@ class DLPipeline(PipelineProtocol, metaclass=ABCMeta):
             m_onnx = ONNXWrapper()
             # input_keys = sorted(input_sample)
             with eval_context(m_onnx):
-                torch.onnx.export(
-                    m_onnx,
-                    (input_sample, {}),
-                    onnx_path,
-                    **shallow_copy_dict(kwargs),
-                )
+                # TODO : onnx export
+                # flow.onnx.export(
+                #     m_onnx,
+                #     (input_sample, {}),
+                #     onnx_path,
+                #     **shallow_copy_dict(kwargs),
+                # )
                 model = onnx.load(onnx_path)
                 input_names = get_input_names(model)
                 # TODO : check inputs

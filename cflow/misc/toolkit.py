@@ -490,10 +490,10 @@ def save_images(arr: arr_type, path: str, num_rows: Optional[int] = None) -> Non
 
 
 def iou(logits: arr_type, labels: arr_type) -> arr_type:
-    is_torch = isinstance(logits, flow.Tensor)
+    is_flow = isinstance(logits, flow.Tensor)
     num_classes = logits.shape[1]
     if num_classes == 1:
-        if is_torch:
+        if is_flow:
             heat_map = flow.sigmoid(logits)
         else:
             heat_map = 1.0 / (1.0 + np.exp(-logits))
@@ -503,7 +503,7 @@ def iou(logits: arr_type, labels: arr_type) -> arr_type:
         raise ValueError("`IOU` only supports binary situations")
     intersect = heat_map * labels
     union = heat_map + labels - intersect
-    kwargs = {"dim" if is_torch else "axis": tuple(range(1, len(intersect.shape)))}
+    kwargs = {"dim" if is_flow else "axis": tuple(range(1, len(intersect.shape)))}
     return intersect.sum(**kwargs) / union.sum(**kwargs)
 
 

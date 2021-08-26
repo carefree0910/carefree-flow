@@ -17,9 +17,9 @@ from typing import Callable
 from typing import Optional
 from typing import NamedTuple
 from tqdm.autonotebook import tqdm
-from torch.optim import Optimizer
 from cftool.misc import update_dict
 from cftool.misc import shallow_copy_dict
+from oneflow.optim import Optimizer
 from oneflow.optim.lr_scheduler import _LRScheduler
 
 from .types import arrays_type
@@ -244,7 +244,7 @@ class Trainer:
         # TODO : amp
         self.use_amp = False
         # self.use_amp = amp
-        # self.grad_scaler = torch.cuda.amp.GradScaler(enabled=amp)
+        # self.grad_scaler = flow.cuda.amp.GradScaler(enabled=amp)
         self.clip_norm = clip_norm
         if monitors is None:
             self.monitors = []
@@ -611,7 +611,7 @@ class Trainer:
             return self.model.train_step(batch_idx, batch, self, loss_kw)
         # forward & loss
         # TODO : amp
-        # with torch.cuda.amp.autocast(enabled=self.use_amp):
+        # with flow.cuda.amp.autocast(enabled=self.use_amp):
         #     forward_results = self.model(batch_idx, *batch, self.state)
         #     loss_dict = self.loss(forward_results, batch, self.state, **loss_kwargs)
         forward_results = self.model(batch_idx, *batch, self.state)

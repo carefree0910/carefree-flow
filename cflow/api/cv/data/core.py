@@ -2,7 +2,7 @@ import numpy as np
 
 from typing import Optional
 from oneflow import Tensor
-from torch.utils.data import Dataset
+from oneflow.utils.data import Dataset
 
 from ....types import arr_type
 from ....types import arrays_type
